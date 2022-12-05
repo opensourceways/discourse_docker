@@ -132,11 +132,13 @@ ADD cron.d_anacron /etc/cron.d/anacron
 RUN useradd discourse -s /bin/bash -m -U &&\
     mkdir -p /var/www &&\
     cd /var/www &&\
-    git clone --depth 1 https://github.com/discourse/discourse.git &&\
+    git clone --depth 1 https://github.com/opensourceways/discourse &&\
     cd discourse &&\
     git remote set-branches --add origin tests-passed &&\
     chown -R discourse:discourse /var/www/discourse &&\
     cd /var/www/discourse &&\
+    gem update --system &&\
+    gem install bundler &&\
     sudo -u discourse bundle install --deployment --jobs 4 --without test development &&\
     bundle exec rake maxminddb:get &&\
     find /var/www/discourse/vendor/bundle -name tmp -type d -exec rm -rf {} +
