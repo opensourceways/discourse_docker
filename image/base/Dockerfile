@@ -74,7 +74,7 @@ RUN mkdir /jemalloc-new && cd /jemalloc-new &&\
 RUN echo 'gem: --no-document' >> /usr/local/etc/gemrc &&\
     mkdir /src && cd /src && git clone https://github.com/sstephenson/ruby-build.git &&\
     cd /src/ruby-build && ./install.sh &&\
-    cd / && rm -rf /src/ruby-build && (ruby-build 2.7.2 /usr/local)
+    cd / && rm -rf /src/ruby-build && (ruby-build 3.0.5 /usr/local)
 
 RUN gem update --system
 
