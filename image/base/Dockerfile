@@ -67,8 +67,8 @@ RUN mkdir /jemalloc-stable && cd /jemalloc-stable &&\
       cd / && rm -rf /jemalloc-stable
 
 RUN mkdir /jemalloc-new && cd /jemalloc-new &&\
-      wget https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2 &&\
-      tar -xjf jemalloc-5.2.1.tar.bz2 && cd jemalloc-5.2.1 && ./configure --prefix=/usr --with-install-suffix=5.2.1 && make build_lib && make install_lib &&\
+      wget https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2 &&\
+      tar -xjf jemalloc-5.3.0.tar.bz2 && cd jemalloc-5.3.0 && ./configure --prefix=/usr --with-install-suffix=5.3.0 && make build_lib && make install_lib &&\
       cd / && rm -rf /jemalloc-new
 
 RUN echo 'gem: --no-document' >> /usr/local/etc/gemrc &&\
@@ -79,7 +79,7 @@ RUN echo 'gem: --no-document' >> /usr/local/etc/gemrc &&\
 RUN gem update --system
 
 RUN gem install bundler --force &&\
-    rm -rf /usr/local/share/ri/2.7.2/system &&\
+    rm -rf /usr/local/share/ri/3.0.5/system &&\
     cd / && git clone https://github.com/discourse/pups.git
 
 ADD install-redis /tmp/install-redis
@@ -137,8 +137,9 @@ RUN useradd discourse -s /bin/bash -m -U &&\
     git remote set-branches --add origin tests-passed &&\
     chown -R discourse:discourse /var/www/discourse &&\
     cd /var/www/discourse &&\
-    gem update --system &&\
-    gem install bundler &&\
-    sudo -u discourse bundle install --deployment --jobs 4 --without test development &&\
+    sudo -u discourse bundle config --local deployment true &&\
+    sudo -u discourse bundle config --local path ./vendor/bundle &&\
+    sudo -u discourse bundle config --local without test development &&\
+    sudo -u discourse bundle install --jobs 4 &&\
     bundle exec rake maxminddb:get &&\
     find /var/www/discourse/vendor/bundle -name tmp -type d -exec rm -rf {} +
