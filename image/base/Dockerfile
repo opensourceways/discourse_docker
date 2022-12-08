@@ -132,7 +132,7 @@ ADD cron.d_anacron /etc/cron.d/anacron
 RUN useradd discourse -s /bin/bash -m -U &&\
     mkdir -p /var/www &&\
     cd /var/www &&\
-    git clone --depth 1 https://github.com/opensourceways/discourse.git &&\
+    git clone https://github.com/opensourceways/discourse.git &&\
     cd discourse &&\
     git checkout v2.8.8 &&\
     git remote set-branches --add origin tests-passed &&\
