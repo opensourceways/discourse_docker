@@ -10,15 +10,15 @@ ENV RAILS_ENV production
 
 RUN echo 2.0.`date +%Y%m%d` > /VERSION
 
-RUN apt update && apt install -y gnupg sudo curl
+RUN apt-get update && apt-get install -y gnupg sudo curl
 RUN echo "debconf debconf/frontend select Teletype" | debconf-set-selections
-RUN apt update && apt -y install fping
-RUN sh -c "fping proxy && echo 'Acquire { Retries \"0\"; HTTP { Proxy \"http://proxy:3128\";}; };' > /etc/apt/apt.conf.d/40proxy && apt update || true"
-RUN apt -y install software-properties-common
+RUN apt-get update && apt-get -y install fping
+RUN sh -c "fping proxy && echo 'Acquire { Retries \"0\"; HTTP { Proxy \"http://proxy:3128\";}; };' > /etc/apt/apt.conf.d/40proxy && apt-get update || true"
+RUN apt-get -y install software-properties-common
 RUN apt-mark hold initscripts
-RUN apt -y upgrade
+RUN apt-get -y upgrade
 
-RUN apt install -y locales locales-all
+RUN apt-get install -y locales locales-all
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
@@ -27,11 +27,11 @@ RUN curl https://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" | \
         tee /etc/apt/sources.list.d/postgres.list
 RUN curl --silent --location https://deb.nodesource.com/setup_15.x | sudo bash -
-RUN apt -y update
+RUN apt-get -y update
 # install these without recommends to avoid pulling in e.g.
 # X11 libraries, mailutils
-RUN apt -y install --no-install-recommends git rsyslog logrotate cron ssh-client less
-RUN apt -y install build-essential rsync \
+RUN apt-get -y install --no-install-recommends git rsyslog logrotate cron ssh-client less
+RUN apt-get -y install build-essential rsync \
                        libxslt-dev libcurl4-openssl-dev \
                        libssl-dev libyaml-dev libtool \
                        libxml2-dev gawk parallel \
@@ -47,23 +47,27 @@ RUN sed -i.bak 's/module(load="imklog")/#module(load="imklog")/' /etc/rsyslog.co
 RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN sh -c "test -f /sbin/initctl || ln -s /bin/true /sbin/initctl"
 RUN cd / &&\
-    apt -y install runit socat &&\
+    apt-get -y install runit socat &&\
     mkdir -p /etc/runit/1.d &&\
-    apt clean &&\
+    apt-get clean &&\
     rm -f /etc/apt/apt.conf.d/40proxy &&\
     locale-gen en_US &&\
-    apt install -y nodejs &&\
+    apt-get install -y nodejs &&\
     npm install -g terser &&\
-    npm install -g uglify-js
+    npm install -g uglify-js &&\
+    npm install -g yarn &&\
+    npm install -g n &&\
+    n stable &&\
+    npm cache clean -f
 
 ADD install-nginx /tmp/install-nginx
 RUN /tmp/install-nginx
 
-RUN apt -y install advancecomp jhead jpegoptim libjpeg-turbo-progs optipng
+RUN apt-get -y install advancecomp jhead jpegoptim libjpeg-turbo-progs optipng
 
 RUN mkdir /jemalloc-stable && cd /jemalloc-stable &&\
-      wget https://github.com/jemalloc/jemalloc/releases/download/3.6.0/jemalloc-3.6.0.tar.bz2 &&\
-      tar -xjf jemalloc-3.6.0.tar.bz2 && cd jemalloc-3.6.0 && ./configure --prefix=/usr && make && make install &&\
+      wget https://github.com/jemalloc/jemalloc/releases/download/4.5.0/jemalloc-4.5.0.tar.bz2 &&\
+      tar -xjf jemalloc-4.5.0.tar.bz2 && cd jemalloc-4.5.0 && ./configure --prefix=/usr && make && make install &&\
       cd / && rm -rf /jemalloc-stable
 
 RUN mkdir /jemalloc-new && cd /jemalloc-new &&\
@@ -141,9 +145,6 @@ RUN useradd discourse -s /bin/bash -m -U &&\
     sudo -u discourse bundle config --local path ./vendor/bundle &&\
     sudo -u discourse bundle config --local without test development &&\
     sudo -u discourse bundle install --jobs 4 &&\
-    npm install -g yarn &&\
-    npm install -g n &&\
-    n stable &&\
     sudo -u discourse yarn install --production --frozen-lockfile &&\
     sudo -u discourse yarn cache clean &&\
     bundle exec rake maxminddb:get &&\
