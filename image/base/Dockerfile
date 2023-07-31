@@ -66,8 +66,8 @@ RUN /tmp/install-nginx
 RUN apt-get -y install advancecomp jhead jpegoptim libjpeg-turbo-progs optipng
 
 RUN mkdir /jemalloc-stable && cd /jemalloc-stable &&\
-      wget https://github.com/jemalloc/jemalloc/releases/download/4.5.0/jemalloc-4.5.0.tar.bz2 &&\
-      tar -xjf jemalloc-4.5.0.tar.bz2 && cd jemalloc-4.5.0 && ./configure --prefix=/usr && make && make install &&\
+      wget https://github.com/jemalloc/jemalloc/releases/download/3.6.0/jemalloc-3.6.0.tar.bz2 &&\
+      tar -xjf jemalloc-3.6.0.tar.bz2 && cd jemalloc-3.6.0 && ./configure --prefix=/usr && make && make install &&\
       cd / && rm -rf /jemalloc-stable
 
 RUN mkdir /jemalloc-new && cd /jemalloc-new &&\
@@ -78,12 +78,12 @@ RUN mkdir /jemalloc-new && cd /jemalloc-new &&\
 RUN echo 'gem: --no-document' >> /usr/local/etc/gemrc &&\
     mkdir /src && cd /src && git clone https://github.com/sstephenson/ruby-build.git &&\
     cd /src/ruby-build && ./install.sh &&\
-    cd / && rm -rf /src/ruby-build && (ruby-build 3.1.3 /usr/local)
+    cd / && rm -rf /src/ruby-build && (ruby-build 3.2.2 /usr/local)
 
 RUN gem update --system
 
 RUN gem install bundler --force &&\
-    rm -rf /usr/local/share/ri/3.1.3/system &&\
+    rm -rf /usr/local/share/ri/3.2.2/system &&\
     cd / && git clone https://github.com/discourse/pups.git
 
 ADD install-redis /tmp/install-redis
@@ -139,13 +139,12 @@ RUN useradd discourse -s /bin/bash -m -U &&\
     git clone --depth 1 https://github.com/opensourceways/discourse.git &&\
     cd discourse &&\
     git remote set-branches --add origin tests-passed &&\
+    git fetch origin tests-passed &&\
+    git checkout -b tests-passed origin/tests-passed &&\
     chown -R discourse:discourse /var/www/discourse &&\
     cd /var/www/discourse &&\
     sudo -u discourse bundle config --local deployment true &&\
     sudo -u discourse bundle config --local path ./vendor/bundle &&\
     sudo -u discourse bundle config --local without test development &&\
     sudo -u discourse bundle install --jobs 4 &&\
-    sudo -u discourse yarn install --production --frozen-lockfile &&\
-    sudo -u discourse yarn cache clean &&\
-    bundle exec rake maxminddb:get &&\
     find /var/www/discourse/vendor/bundle -name tmp -type d -exec rm -rf {} +
