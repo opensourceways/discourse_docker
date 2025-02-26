@@ -660,6 +660,11 @@ run_run() {
 run_bootstrap() {
   set_template_info
 
+  export RAILS_ENV=production
+  export RAILS_ASSETS_PRECOMPILE=false
+
+  rails assets:precompile --no-source-map
+  
   base_image=`cat $config_file | $docker_path run $user_args --rm -i -a stdin -a stdout $image ruby -e \
     "require 'yaml'; puts YAML.load(STDIN.readlines.join)['base_image']"`
 
