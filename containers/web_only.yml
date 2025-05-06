@@ -26,8 +26,7 @@ templates:
 
 params:
   ## Which Git revision should this container use? (default: tests-passed)
-  version: cde16697cd96a3765179b97518c4976f9817f734 
-  # b056f9538b30bc4d8dce735f631afe31f99ddc57
+  version: b056f9538b30bc4d8dce735f631afe31f99ddc57
 
 env:
   LC_ALL: en_US.UTF-8
@@ -108,7 +107,7 @@ hooks:
           - git clone https://github.com/discourse/discourse-solved.git
           - git clone https://github.com/discourse/discourse-gamification.git
           - git clone https://github.com/discourse/discourse-reactions.git
-          - git clone https://github.com/opensourceways/discourse-multilingual.git
+          - git clone https://github.com/paviliondev/discourse-multilingual.git
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
