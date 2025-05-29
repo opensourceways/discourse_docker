@@ -23,7 +23,6 @@ templates:
 
 # any extra arguments for Docker?
 # docker_args:
-docker_args: "--user 1000:1000"
 
 params:
   ## Which Git revision should this container use? (default: tests-passed)
@@ -109,12 +108,6 @@ hooks:
           - git clone https://github.com/discourse/discourse-gamification.git
           - git clone https://github.com/discourse/discourse-reactions.git
           - git clone https://github.com/opensourceways/discourse-multilingual.git
-
-  before_bundle_exec:
-    - exec:
-        cmd:
-          - find /pups/templates -type f -name '*.yml' -exec sed -i '/rm -f \/etc\/cron.d\/anacron/d' {} \;
-
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
