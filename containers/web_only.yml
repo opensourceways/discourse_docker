@@ -32,6 +32,8 @@ env:
   LC_ALL: en_US.UTF-8
   LANG: en_US.UTF-8
   LANGUAGE: en_US.UTF-8
+  DISCOURSE_RUN_AS_ROOT: 
+  DISCOURSE_USE_PRECOMPILED_ASSETS: 
   # DISCOURSE_DEFAULT_LOCALE: en
 
   ## How many concurrent web requests are supported? Depends on memory and CPU cores.
