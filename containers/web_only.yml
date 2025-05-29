@@ -128,7 +128,6 @@ run:
         - bash -c "touch -a /shared/log/rails/{sidekiq,puma.err,puma}.log"
         - bash -c "ln -sf /shared/log/rails/{sidekiq,puma.err,puma}.log log/"
         - sed -i 's/default \$scheme;/default https;/' /etc/nginx/conf.d/discourse.conf
-   - exec: useradd -m -s /bin/bash discourse
    - exec: chown -R discourse:discourse /var/www 
    - exec: chmod -R 755 /var/www
 
