@@ -1,0 +1,15 @@
+FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/common/discourse:v1.8.0
+
+# 设置目录权限
+RUN chown -R discourse:discourse /var/www/discourse && \
+    chown -R discourse:discourse /shared && \
+    chown -R discourse:discourse /var/log && \
+    chown -R discourse:discourse /var/lib && \
+    chown -R discourse:discourse /var/spool
+
+
+# 切换到非root用户
+USER discourse
+
+# 保留原有的ENTRYPOINT和CMD
+ENTRYPOINT ["/sbin/boot"]
