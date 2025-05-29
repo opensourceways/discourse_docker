@@ -23,10 +23,11 @@ templates:
 
 # any extra arguments for Docker?
 # docker_args:
+docker_args: "--user 1000:1000 --cap-drop=ALL --cap-add=CHOWN --cap-add=SETGID --cap-add=SETUID --cap-add=NET_BIND_SERVICE"
 
 params:
   ## Which Git revision should this container use? (default: tests-passed)
-  version:
+  version: b056f9538b30bc4d8dce735f631afe31f99ddc57
 
 env:
   LC_ALL: en_US.UTF-8
@@ -112,6 +113,13 @@ hooks:
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - SETGID
+    - SETUID
+    - NET_BIND_SERVICE
   # - exec: echo "Beginning of custom commands"
 
   ## If you want to configure password login for root, uncomment and change:
@@ -129,5 +137,10 @@ run:
         - bash -c "touch -a /shared/log/rails/{sidekiq,puma.err,puma}.log"
         - bash -c "ln -sf /shared/log/rails/{sidekiq,puma.err,puma}.log log/"
         - sed -i 's/default \$scheme;/default https;/' /etc/nginx/conf.d/discourse.conf
+        
+        - chown -R 1000:1000 /var/www/discourse
+        - chown -R 1000:1000 /shared
+        - chmod -R 755 /var/www/discourse
+        - chmod -R 755 /shared
   # - exec: echo "End of custom commands"
   # - exec: awk -F\# '{print $1;}' ~/.ssh/authorized_keys | awk 'BEGIN { print "Authorized SSH keys for this container:"; } NF>=2 {print $NF;}'
