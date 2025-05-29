@@ -23,7 +23,7 @@ templates:
 
 # any extra arguments for Docker?
 # docker_args:
-docker_args: "--user 1000:1000 --cap-drop=ALL --cap-add=CHOWN --cap-add=SETGID --cap-add=SETUID --cap-add=NET_BIND_SERVICE"
+docker_args: "--user 1000:1000"
 
 params:
   ## Which Git revision should this container use? (default: tests-passed)
@@ -75,7 +75,6 @@ env:
   DISCOURSE_DB_PASSWORD:
   DISCOURSE_DB_HOST:
   DISCOURSE_REDIS_HOST:
-  DISCOURSE_REDIS_PASSWORD:
 
   ## The http or https CDN address for this Discourse instance (configured to pull)
   ## see https://meta.discourse.org/t/14857 for details
@@ -102,24 +101,17 @@ hooks:
         cmd:
           - mkdir -p plugins
           - git clone https://github.com/discourse/docker_manager.git
-          - git clone -b service https://GIT_USERNAME:GIT_PASSWORD@github.com/opensourceways/discourse-easecheck.git
+          - git clone https://GIT_USERNAME:GIT_PASSWORD@github.com/opensourceways/discourse-easecheck.git
           - git clone https://github.com/opensourceways/discourse-oauth2-basic.git
           - git clone https://github.com/opensourceways/discourse-formatting-toolbar.git
           - git clone https://github.com/opensourceways/discourse-translator.git
           - git clone https://github.com/discourse/discourse-solved.git
           - git clone https://github.com/discourse/discourse-gamification.git
           - git clone https://github.com/discourse/discourse-reactions.git
-          - git clone https://github.com/paviliondev/discourse-multilingual.git
+          - git clone https://github.com/opensourceways/discourse-multilingual.git
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
-  cap_drop:
-    - ALL
-  cap_add:
-    - CHOWN
-    - SETGID
-    - SETUID
-    - NET_BIND_SERVICE
   # - exec: echo "Beginning of custom commands"
 
   ## If you want to configure password login for root, uncomment and change:
@@ -130,18 +122,12 @@ run:
   ## If you want to authorized additional users, uncomment and change:
   #- exec: ssh-import-id username
   #- exec: ssh-import-id anotherusername
-  - exec:
+   - exec:
       cd: /var/www/discourse
       cmd:
         - sed -i 's/GlobalSetting.serve_static_assets/true/' config/environments/production.rb
         - bash -c "touch -a /shared/log/rails/{sidekiq,puma.err,puma}.log"
         - bash -c "ln -sf /shared/log/rails/{sidekiq,puma.err,puma}.log log/"
         - sed -i 's/default \$scheme;/default https;/' /etc/nginx/conf.d/discourse.conf
-        
-        - chown -R 1000:1000 /var/www/discourse
-        - chown -R 1000:1000 /shared
-        - chmod -R 755 /var/www/discourse
-        - chmod -R 755 /shared
   # - exec: echo "End of custom commands"
   # - exec: awk -F\# '{print $1;}' ~/.ssh/authorized_keys | awk 'BEGIN { print "Authorized SSH keys for this container:"; } NF>=2 {print $NF;}'
-  
