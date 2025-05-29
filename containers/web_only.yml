@@ -113,7 +113,8 @@ hooks:
   before_bundle_exec:
     - exec:
         cmd:
-          - sed -i '/rm -f \/etc\/cron.d\/anacron/d' /pups/templates/web.template.yml
+          - find /pups/templates -type f -name '*.yml' -exec sed -i '/rm -f \/etc\/cron.d\/anacron/d' {} \;
+
 
 ## Remember, this is YAML syntax - you can only have one block with a name
 run:
