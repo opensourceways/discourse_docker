@@ -12,7 +12,6 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     touch /var/log/syslog   && chown -f discourse:www-data /var/log/syslog* && \
     touch /var/log/auth.log && chown -f discourse:www-data /var/log/auth.log* && \
     touch /var/log/kern.log && chown -f discourse:www-data /var/log/kern.log* && \
-
     chown -R discourse:www-data /var/www/discourse && \
     chown -R discourse:www-data /shared && \
     chown -R discourse:www-data /var/log && \
