@@ -5,7 +5,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
 	mkdir -p /shared/state/anacron-spool && ln -s /shared/state/anacron-spool /var/spool/anacron && \
 	mkdir -p /shared/log/rails && mkdir -p /shared/uploads && mkdir -p /shared/backups && \
 	rm -rf /shared/tmp/{backups,restores} && mkdir -p /shared/tmp/{backups,restores} && \
-    rm -f /etc/runit/1.d/00-fix-var-logs.txt && \
+    rm -f /etc/runit/1.d/00-fix-var-logs && \
     mkdir -p /var/log/nginx && \
     chown -R www-data:www-data /var/log/nginx && \
     chmod -R 644 /var/log/nginx && \
