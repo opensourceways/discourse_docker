@@ -1,12 +1,23 @@
-FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/common/discourse:v1.8.0
+FROM swr.cn-north-4.myhuaweicloud.com/opensourceway/common/discourse:v1.8.2.test
 
 # 设置目录权限
-RUN chown -R discourse:discourse /var/www/discourse && \
-    chown -R discourse:discourse /shared && \
-    chown -R discourse:discourse /var/log && \
-    chown -R discourse:discourse /var/lib && \
-    chown -R discourse:discourse /var/spool
+RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/logrotate && \
+	mkdir -p /shared/state/anacron-spool && ln -s /shared/state/anacron-spool /var/spool/anacron && \
+	mkdir -p /shared/log/rails && mkdir -p /shared/uploads && mkdir -p /shared/backups && \
+	rm -rf /shared/tmp/{backups,restores} && mkdir -p /shared/tmp/{backups,restores} && \
+    mkdir -p /var/log/nginx && \
+    chown -R www-data:www-data /var/log/nginx && \
+    chmod -R 644 /var/log/nginx && \
+    chmod 755 /var/log/nginx && \
+    touch /var/log/syslog   && chown -f discourse:www-data /var/log/syslog* && \
+    touch /var/log/auth.log && chown -f discourse:www-data /var/log/auth.log* && \
+    touch /var/log/kern.log && chown -f discourse:www-data /var/log/kern.log* && \
 
+    chown -R discourse:www-data /var/www/discourse && \
+    chown -R discourse:www-data /shared && \
+    chown -R discourse:www-data /var/log && \
+    chown -R discourse:www-data /var/lib && \
+    chown -R discourse:www-data /var/spool
 
 # 切换到非root用户
 USER discourse
