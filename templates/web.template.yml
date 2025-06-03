@@ -89,6 +89,7 @@ run:
       cd: $home
       hook: code
       cmd:
+        - git config --global --add safe.directory $home
         - git reset --hard
         - git clean -f
         # TODO Remove the special handling of shallow clones when everyone uses images without that clone type
