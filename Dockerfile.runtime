@@ -20,6 +20,8 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /shared && \
     chown -R discourse:www-data /var/log && \
     chown -R discourse:www-data /var/lib && \
+    chown -R discourse:www-data /tmp && \
+    chown -R discourse:www-data /dev && \
     chown -R discourse:www-data /var/spool
 
 # 切换到非root用户
