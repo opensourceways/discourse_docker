@@ -9,10 +9,10 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /etc/service && \
     chmod -R 755 /etc/service && \
     rm -f /etc/runit/1.d/00-fix-var-logs && \
+    rm -rf /etc/service/rsyslog &&\
     mkdir -p /var/log/nginx && \
     chown -R www-data:www-data /var/log/nginx && \
-    chmod -R 644 /var/log/nginx && \
-    chmod 755 /var/log/nginx && \
+    chmod -R 755 /var/log/nginx && \
     touch /var/log/syslog   && chown -f discourse:www-data /var/log/syslog* && \
     touch /var/log/auth.log && chown -f discourse:www-data /var/log/auth.log* && \
     touch /var/log/kern.log && chown -f discourse:www-data /var/log/kern.log* && \
@@ -27,8 +27,8 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /var/spool && \
     sed -i "s|root|discourse|g" /etc/rsyslog.conf && \
     sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
-    sed -i "s|chgrp|#chgrp|g" /etc/service/rsyslog/run && \
-    sed -i "s|chmod|#chmod|g" /etc/service/rsyslog/run
+    # sed -i "s|chgrp|#chgrp|g" /etc/service/rsyslog/run && \
+    # sed -i "s|chmod|#chmod|g" /etc/service/rsyslog/run
 
 
 # 切换到非root用户
