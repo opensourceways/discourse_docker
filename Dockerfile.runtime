@@ -26,11 +26,9 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /dev && \
     chown -R discourse:www-data /var/spool && \
     sed -i "s|root|discourse|g" /etc/rsyslog.conf && \
-    sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
+    sed -i "s|adm|www-data|g" /etc/rsyslog.conf
     # sed -i "s|chgrp|#chgrp|g" /etc/service/rsyslog/run && \
     # sed -i "s|chmod|#chmod|g" /etc/service/rsyslog/run
-
-
 # 切换到非root用户
 USER discourse
 
