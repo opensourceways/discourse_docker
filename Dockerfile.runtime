@@ -23,7 +23,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /var/run && \
     chown -R discourse:www-data /run && \
     chown -R discourse:www-data /tmp && \
-    chown -R discourse:www-data /dev/log && \
+    chown -R discourse:www-data /dev && \
     chown -R discourse:www-data /var/spool && \
     sed -i "s|root|discourse|g" /etc/rsyslog.conf && \
     sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
