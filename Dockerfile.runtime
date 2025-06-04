@@ -9,7 +9,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /etc/service && \
     chmod -R 755 /etc/service && \
     rm -f /etc/runit/1.d/00-fix-var-logs && \
-    rm -rf /etc/service/rsyslog &&\
+    rm -rf /etc/service/rsyslog /etc/service/cron /etc/service/anacron &&\
     mkdir -p /var/log/nginx && \
     chown -R www-data:www-data /var/log/nginx && \
     chmod -R 755 /var/log/nginx && \
@@ -26,7 +26,9 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /dev && \
     chown -R discourse:www-data /var/spool && \
     sed -i "s|root|discourse|g" /etc/rsyslog.conf && \
-    sed -i "s|adm|www-data|g" /etc/rsyslog.conf
+    sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
+    sed -i '1i cd /var/www/discourse' /etc/service/unicorn/run && \
+    sed -i "s|www-data|discourse|g" /etc/nginx/nginx.conf
     # sed -i "s|chgrp|#chgrp|g" /etc/service/rsyslog/run && \
     # sed -i "s|chmod|#chmod|g" /etc/service/rsyslog/run
 # 切换到非root用户
