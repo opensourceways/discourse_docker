@@ -34,9 +34,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /etc/profile && \
     chage --maxdays 30 discourse && \
     passwd -| discourse && \
-    usermod -s /sbin/nologin sync && \
-    usermod -s /sbin/nologin shutdown && \
-    usermod -S /sbin/nologin halt
+    usermod -s /sbin/nologin sync
 
 # 切换到非root用户
 USER discourse
