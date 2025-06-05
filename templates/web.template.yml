@@ -54,16 +54,14 @@ run:
         exec 2>&1
         # redis
         # postgres
-        cd $home
-        chown -R discourse:www-data /shared/log/rails
         # before precompile
         if [[ -z "$PRECOMPILE_ON_BOOT" ]]; then
           PRECOMPILE_ON_BOOT=1
         fi
         if [ -f /usr/local/bin/create_db ] && [ "$CREATE_DB_ON_BOOT" = "1" ]; then /usr/local/bin/create_db; fi;
-        if [ "$MIGRATE_ON_BOOT" = "1" ]; then su discourse -c 'bundle exec rake db:migrate'; fi
-        if [ "$PRECOMPILE_ON_BOOT" = "1" ]; then SKIP_EMBER_CLI_COMPILE=1 su discourse -c 'bundle exec rake assets:precompile'; fi
-        LD_PRELOAD=$RUBY_ALLOCATOR HOME=/home/discourse USER=discourse exec thpoff chpst -u discourse:www-data -U discourse:www-data bundle exec config/unicorn_launcher -E production -c config/unicorn.conf.rb
+        if [ "$MIGRATE_ON_BOOT" = "1" ]; then bundle exec rake db:migrate; fi
+        if [ "$PRECOMPILE_ON_BOOT" = "1" ]; then SKIP_EMBER_CLI_COMPILE=1 bundle exec rake assets:precompile; fi
+        exec bundle exec config/unicorn_launcher -E production -c config/unicorn.conf.rb
 
   - file:
      path: /etc/service/nginx/run
@@ -91,32 +89,29 @@ run:
       cd: $home
       hook: code
       cmd:
-        - sudo -H -E -u discourse git reset --hard
-        - sudo -H -E -u discourse git clean -f
+        - git config --global --add safe.directory $home
+        - git reset --hard
+        - git clean -f
         # TODO Remove the special handling of shallow clones when everyone uses images without that clone type
-        - |-
-          sudo -H -E -u discourse bash -c '
-            set -o errexit
-            if [ $(git rev-parse --is-shallow-repository) == "true" ]; then
-                git remote set-branches --add origin main
-                git remote set-branches origin $version
-                git fetch --depth 1 origin $version
-            else
-                git fetch --tags --prune-tags --prune --force origin
+        - |
+          set -o errexit
+          if [ $(git rev-parse --is-shallow-repository) == "true" ]; then
+              git remote set-branches --add origin main
+              git remote set-branches origin $version
+              git fetch --depth 1 origin $version
+          else
+              git fetch --tags --prune-tags --prune --force origin
+          fi
+        - |
+          set -o errexit
+          if [[ $(git symbolic-ref --short HEAD) == $version ]] ; then
+              git pull
+          else
+              git -c advice.detachedHead=false checkout $version
             fi
-          '
-        - |-
-          sudo -H -E -u discourse bash -c '
-            set -o errexit
-            if [[ $(git symbolic-ref --short HEAD) == $version ]] ; then
-                git pull
-            else
-                git -c advice.detachedHead=false checkout $version
-            fi
-          '
-        - sudo -H -E -u discourse git config user.discourse-version $version
+          
+        - git config user.discourse-version $version
         - mkdir -p tmp
-        - chown discourse:www-data tmp
         - mkdir -p tmp/pids
         - mkdir -p tmp/sockets
         - touch tmp/.gitkeep
@@ -127,9 +122,6 @@ run:
         - bash -c "ln    -s           /shared/{uploads,backups} $home/public"
         - bash -c "mkdir -p           /shared/tmp/{backups,restores}"
         - bash -c "ln    -s           /shared/tmp/{backups,restores} $home/tmp"
-        - chown -R discourse:www-data /shared/log/rails /shared/uploads /shared/backups /shared/tmp
-        # scrub broken symlinks from plugins that have been removed
-        - "[ ! -d public/plugins ] || find public/plugins/ -maxdepth 1 -xtype l -delete"
 
   - exec:
       cmd:
@@ -163,6 +155,12 @@ run:
       filename: "/etc/nginx/nginx.conf"
       from: /worker_connections.+$/
       to: worker_connections $nginx_worker_connections ;
+  
+  - replace:
+      filename: "/etc/nginx/conf.d/discourse.conf"
+      from: /listen\s+80;/
+      to: "listen 8080;"
+
 
   - exec:
       cmd: echo "done configuring web"
@@ -323,37 +321,6 @@ run:
   # later move this snipped into an initialization script
   # we also ensure all the symlinks we need to /shared are in place in the correct structure
   # this allows us to bootstrap on one machine and then run on another
-  - file:
-      path: /etc/runit/1.d/00-ensure-links
-      chmod: +x
-      contents: |
-        #!/bin/bash
-        if [[ ! -L /var/lib/logrotate ]]; then
-          rm -fr /var/lib/logrotate
-          mkdir -p /shared/state/logrotate
-          ln -s /shared/state/logrotate /var/lib/logrotate
-        fi
-        if [[ ! -L /var/spool/anacron ]]; then
-          rm -fr /var/spool/anacron
-          mkdir -p /shared/state/anacron-spool
-          ln -s /shared/state/anacron-spool /var/spool/anacron
-        fi
-        if [[ ! -d /shared/log/rails ]]; then
-          mkdir -p /shared/log/rails
-          chown -R discourse:www-data /shared/log/rails
-        fi
-        if [[ ! -d /shared/uploads ]]; then
-          mkdir -p /shared/uploads
-          chown -R discourse:www-data /shared/uploads
-        fi
-        if [[ ! -d /shared/backups ]]; then
-          mkdir -p /shared/backups
-          chown -R discourse:www-data /shared/backups
-        fi
-
-        rm -rf /shared/tmp/{backups,restores}
-        mkdir -p /shared/tmp/{backups,restores}
-        chown -R discourse:www-data /shared/tmp/{backups,restores}
   - file:
       path: /etc/runit/1.d/01-cleanup-web-pids
       chmod: +x
