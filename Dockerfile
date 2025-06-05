@@ -33,7 +33,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     echo "set +o history" >> /etc/bashrc && \
     sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /etc/profile && \
     chage --maxdays 30 discourse && \
-    passwd -| $NGINX_USER && \
+    passwd -| discourse && \
     usermod -s /sbin/nologin sync && \
     usermod -s /sbin/nologin shutdown && \
     usermod -S /sbin/nologin halt
