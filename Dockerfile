@@ -32,7 +32,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     echo "umask0027" >> /etc/bashrc && \
     echo "set +o history" >> /etc/bashrc && \
     sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /etc/profile && \
-    chage --maxdays 30 nginx && \
+    chage --maxdays 30 discourse && \
     passwd -| $NGINX_USER && \
     usermod -s /sbin/nologin sync && \
     usermod -s /sbin/nologin shutdown && \
