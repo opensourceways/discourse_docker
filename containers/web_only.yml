@@ -26,7 +26,7 @@ templates:
 
 params:
   ## Which Git revision should this container use? (default: tests-passed)
-  version: 3b9d9f5893d6cb4c6fe9ec0fa9d2830ceeacb4f8
+  version: e7450cc6da49fbc4cf6f251d7d9297aaf457e240
 
 env:
   LC_ALL: en_US.UTF-8
