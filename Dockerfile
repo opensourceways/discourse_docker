@@ -25,6 +25,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chown -R discourse:www-data /tmp && \
     chown -R discourse:www-data /dev && \
     chown -R discourse:www-data /var/spool && \
+    chown -R discourse:discourse /var/nginx/cache && \
     sed -i "s|root|discourse|g" /etc/rsyslog.conf && \
     sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
     sed -i '2i cd /var/www/discourse' /etc/service/unicorn/run && \
