@@ -51,6 +51,15 @@ run:
      chmod: "+x"
      contents: |
         #!/bin/bash
+        # —— 清理明文环境变量 —— 
+        unset DISCOURSE_HOSTNAME DISCOURSE_REDIS_HOST DISCOURSE_SMTP_USER_NAME \
+              DISCOURSE_DB_PASSWORD DISCOURSE_SMTP_ADDRESS \
+              DISCOURSE_SMTP_AUTHENTICATION DISCOURSE_DEVELOPER_EMAILS \
+              DISCOURSE_MAXMIND_LICENSE_KEY DISCOURSE_SMTP_PORT \
+              DISCOURSE_SMTP_PASSWORD DISCOURSE_NOTIFICATION_EMAIL \
+              DISCOURSE_DB_HOST DISCOURSE_DB_NAME \
+              DISCOURSE_USE_PRECOMPILED_ASSETS DISCOURSE_REDIS_PASSWORD \
+              DISCOURSE_DB_USERNAME DISCOURSE_SMTP_ENABLE_START_TLS
         exec 2>&1
         # redis
         # postgres
@@ -68,6 +77,15 @@ run:
      chmod: "+x"
      contents: |
         #!/bin/sh
+        # —— 清理明文环境变量 —— 
+        unset DISCOURSE_HOSTNAME DISCOURSE_REDIS_HOST DISCOURSE_SMTP_USER_NAME \
+              DISCOURSE_DB_PASSWORD DISCOURSE_SMTP_ADDRESS \
+              DISCOURSE_SMTP_AUTHENTICATION DISCOURSE_DEVELOPER_EMAILS \
+              DISCOURSE_MAXMIND_LICENSE_KEY DISCOURSE_SMTP_PORT \
+              DISCOURSE_SMTP_PASSWORD DISCOURSE_NOTIFICATION_EMAIL \
+              DISCOURSE_DB_HOST DISCOURSE_DB_NAME \
+              DISCOURSE_USE_PRECOMPILED_ASSETS DISCOURSE_REDIS_PASSWORD \
+              DISCOURSE_DB_USERNAME DISCOURSE_SMTP_ENABLE_START_TLS
         exec 2>&1
         exec /usr/sbin/nginx
 
@@ -84,6 +102,14 @@ run:
      contents: |
        #!/bin/bash
        sv stop unicorn
+  
+  # - file:
+  #     path: /etc/runit/3.d/remove-discourse-conf
+  #     chmod: "+x"
+  #     contents: |
+  #       #!/bin/bash
+  #       sleep 5  # 等待主服务完成启动
+  #       rm -f /var/www/discourse/config/discourse.conf
 
   - exec:
       cd: $home
@@ -170,6 +196,7 @@ run:
       cd: $home
       hook: web
       cmd:
+        - rm -f config/discourse.conf
         # install bundler version to match Gemfile.lock
         - gem install bundler --conservative -v $(awk '/BUNDLED WITH/ { getline; gsub(/ /,""); print $0 }' Gemfile.lock)
         - find $home ! -user discourse -exec chown discourse {} \+
