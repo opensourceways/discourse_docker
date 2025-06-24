@@ -263,43 +263,69 @@ run:
   - file:
      path: /usr/local/bin/discourse
      chmod: +x
-     contents: |
+    #  contents: |
+    #    #!/bin/bash
+    #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/discourse "$@")
+    contents: |
        #!/bin/bash
-       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/discourse "$@")
+       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec script/discourse "$@"'
+
+  # - file:
+  #    path: /usr/local/bin/rails
+  #    chmod: +x
+  #    contents: |
+  #      #!/bin/bash
+  #      # If they requested a console, load pry instead
+  #      if [ "$*" == "c" -o "$*" == "console" ]
+  #      then
+  #       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec pry -r ./config/environment)
+  #      else
+  #       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/rails "$@")
+  #      fi
 
   - file:
-     path: /usr/local/bin/rails
-     chmod: +x
-     contents: |
-       #!/bin/bash
-       # If they requested a console, load pry instead
-       if [ "$*" == "c" -o "$*" == "console" ]
-       then
-        (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec pry -r ./config/environment)
-       else
-        (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/rails "$@")
-       fi
+      path: /usr/local/bin/rails
+      chmod: +x
+      contents: |
+        #!/bin/bash
+        # If they requested a console, load pry instead
+        if [ "$*" == "c" -o "$*" == "console" ]
+        then
+          exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec pry -r ./config/environment'
+        else
+          exec su -s /bin/bash -l discourse -c "cd /var/www/discourse && RAILS_ENV=production bundle exec script/rails \"$@\""
+        fi
 
   - file:
      path: /usr/local/bin/rake
      chmod: +x
+    #  contents: |
+    #    #!/bin/bash
+    #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec bin/rake "$@")
      contents: |
        #!/bin/bash
-       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec bin/rake "$@")
+       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec bin/rake "$@"'
+
 
   - file:
      path: /usr/local/bin/rbtrace
      chmod: +x
+    #  contents: |
+    #    #!/bin/bash
+    #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec rbtrace "$@")
      contents: |
        #!/bin/bash
-       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec rbtrace "$@")
+       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec rbtrace "$@"'
 
   - file:
      path: /usr/local/bin/stackprof
      chmod: +x
+    #  contents: |
+    #    #!/bin/bash
+    #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec stackprof "$@")
      contents: |
        #!/bin/bash
-       (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec stackprof "$@")
+       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec stackprof "$@"'
 
   - file:
      path: /etc/update-motd.d/10-web
