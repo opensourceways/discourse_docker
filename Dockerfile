@@ -43,7 +43,7 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     rm -rf /var/lib/apt/lists/*
 
 # 切换到非root用户
-USER discourse
+# USER discourse
 
 # 保留原有的ENTRYPOINT和CMD
 ENTRYPOINT ["/sbin/boot"]
