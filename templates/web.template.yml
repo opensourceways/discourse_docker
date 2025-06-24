@@ -268,7 +268,7 @@ run:
     #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/discourse "$@")
      contents: |
        #!/bin/bash
-       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec script/discourse "$@"'
+       exec chpst -u discourse:www-data -- /bin/bash -lc 'cd /var/www/discourse && RAILS_ENV=production bundle exec script/discourse "$@"'
 
   # - file:
   #    path: /usr/local/bin/rails
@@ -291,9 +291,9 @@ run:
         # If they requested a console, load pry instead
         if [ "$*" == "c" -o "$*" == "console" ]
         then
-          exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec pry -r ./config/environment'
+          exec chpst -u discourse:www-data -- /bin/bash -lc 'cd /var/www/discourse && RAILS_ENV=production bundle exec pry -r ./config/environment'
         else
-          exec su -s /bin/bash -l discourse -c "cd /var/www/discourse && RAILS_ENV=production bundle exec script/rails \"$@\""
+          exec chpst -u discourse:www-data -- /bin/bash -lc "cd /var/www/discourse && RAILS_ENV=production bundle exec script/rails \"$@\""
         fi
 
   - file:
@@ -304,7 +304,7 @@ run:
     #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec bin/rake "$@")
      contents: |
        #!/bin/bash
-       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec bin/rake "$@"'
+       exec chpst -u discourse:www-data -- /bin/bash -lc 'cd /var/www/discourse && RAILS_ENV=production bundle exec bin/rake "$@"'
 
 
   - file:
@@ -315,7 +315,7 @@ run:
     #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec rbtrace "$@")
      contents: |
        #!/bin/bash
-       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec rbtrace "$@"'
+       exec chpst -u discourse:www-data -- /bin/bash -lc 'cd /var/www/discourse && RAILS_ENV=production bundle exec rbtrace "$@"'
 
   - file:
      path: /usr/local/bin/stackprof
@@ -325,7 +325,7 @@ run:
     #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec stackprof "$@")
      contents: |
        #!/bin/bash
-       exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec stackprof "$@"'
+       exec chpst -u discourse:www-data -- /bin/bash -lc 'cd /var/www/discourse && RAILS_ENV=production bundle exec stackprof "$@"'
 
   - file:
      path: /etc/update-motd.d/10-web
