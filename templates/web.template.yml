@@ -266,7 +266,7 @@ run:
     #  contents: |
     #    #!/bin/bash
     #    (cd /var/www/discourse && RAILS_ENV=production sudo -H -E -u discourse bundle exec script/discourse "$@")
-    contents: |
+     contents: |
        #!/bin/bash
        exec su -s /bin/bash -l discourse -c 'cd /var/www/discourse && RAILS_ENV=production bundle exec script/discourse "$@"'
 
@@ -284,9 +284,9 @@ run:
   #      fi
 
   - file:
-      path: /usr/local/bin/rails
-      chmod: +x
-      contents: |
+     path: /usr/local/bin/rails
+     chmod: +x
+     contents: |
         #!/bin/bash
         # If they requested a console, load pry instead
         if [ "$*" == "c" -o "$*" == "console" ]
