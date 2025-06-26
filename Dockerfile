@@ -91,7 +91,6 @@ RUN \
   find /etc/nginx -type d -exec chmod 550 {} \; && \
   # 所有 .conf 文件：640（-rw-r-----）
   find /etc/nginx -type f -name '*.conf' -exec chmod 640 {} \; && \
-  chmod 440 /etc/nginx/geoip/* /etc/nginx/modules/* && \
   find /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets -type f -exec chmod 640 {} \;
 
 # 对 /var 下目录做按需属主和权限调整
