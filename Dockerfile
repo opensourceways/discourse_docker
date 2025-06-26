@@ -4,14 +4,6 @@ FROM local_discourse/web_only:latest
 # USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN update-ca-certificates
-ENV PGSSLMODE=require \
-    PGSSLROOTCERT=/etc/ssl/certs/pg-server-ca.crt
-
-RUN update-ca-certificates
-ENV REDIS_PORT=6379 \
-    REDIS_SSL=true 
-  
 # 卸载 sudo
 RUN apt-get update 
 # RUN apt-get remove -y sudo 
