@@ -25,10 +25,8 @@ RUN apt-get update \
       cmake \
       flex \
       libtool \
-      openjdk-11-jdk-headless \
       php-cli \
       python3-dbg \
-      python3-pdb \
  && rm -f \
       /usr/bin/tcpdump      \
       /usr/bin/nmap          \
