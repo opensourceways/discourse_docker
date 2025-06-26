@@ -1,5 +1,63 @@
 FROM local_discourse/web_only:latest
 
+# 切换为root用户卸载安装调试工具
+# USER root
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN update-ca-certificates
+ENV PGSSLMODE=require \
+    PGSSLROOTCERT=/etc/ssl/certs/pg-server-ca.crt
+
+RUN update-ca-certificates
+ENV REDIS_PORT=6379 \
+    REDIS_SSL=true 
+  
+# 卸载 sudo
+RUN apt-get update 
+# RUN apt-get remove -y sudo 
+RUN apt-get autoremove -y 
+RUN apt-get clean 
+RUN rm -rf /var/lib/apt/lists/*
+
+# 卸载安装工具
+RUN apt-get update \
+ && apt-get purge -y --auto-remove \
+      tcpdump \
+      nmap \
+      wireshark-common \
+      netcat-openbsd \
+      gdb \
+      strace \
+      binutils \
+      build-essential \
+      cmake \
+      flex \
+      libtool \
+      openjdk-11-jdk-headless \
+      php-cli \
+      python3-dbg \
+      python3-pdb \
+ && rm -f \
+      /usr/bin/tcpdump      \
+      /usr/bin/nmap          \
+      /usr/bin/wireshark*    \
+      /usr/bin/netcat        \
+      /usr/bin/gdb           \
+      /usr/bin/strace        \
+      /usr/bin/readelf       \
+      /usr/bin/cpp           \
+      /usr/bin/gcc           \
+      /usr/bin/make          \
+      /usr/bin/objdump       \
+      /usr/bin/ar            \
+      /usr/bin/ld            \
+      /usr/bin/flex          \
+      /usr/bin/lex           \
+      /usr/bin/rpcgen        \
+      /usr/bin/cmake         \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 # 设置目录权限
 RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/logrotate && \
 	mkdir -p /shared/state/anacron-spool && ln -s /shared/state/anacron-spool /var/spool/anacron && \
@@ -35,6 +93,70 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     chage --maxdays 30 discourse && \
     passwd -| discourse && \
     usermod -s /sbin/nologin sync
+
+# 修正 /etc/nginx 下所有目录和文件的属主与权限
+RUN \
+  chown -R discourse:www-data /etc/nginx && \
+  # 所有目录：550（dr-xr-x---）
+  find /etc/nginx -type d -exec chmod 550 {} \; && \
+  # 所有 .conf 文件：640（-rw-r-----）
+  find /etc/nginx -type f -name '*.conf' -exec chmod 640 {} \; && \
+  chmod 440 /etc/nginx/geoip/* /etc/nginx/modules/* && \
+  find /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets -type f -exec chmod 640 {} \;
+
+# 对 /var 下目录做按需属主和权限调整
+RUN \
+    # 需要写入的目录：discourse:www-data, 750
+    chown discourse:www-data /var/backups /var/log /var/nginx /var/www/discourse \
+    && chmod 750 /var/backups /var/log /var/nginx /var/www/discourse \
+    \
+    # 不需要写入的系统目录：root:root, 550
+    chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
+    \
+    # /var/tmp 保持 1777
+    chmod 1777 /var/tmp \
+    \
+    # 写入目录下的文件设为 600
+    find /var/backups /var/log /var/nginx /var/www/discourse -type f -exec chmod 600 {} \; \
+    \
+    # 非写入目录下的文件设为 440
+    find /var/cache /var/lib /var/local /var/spool /var/mail /var/opt -type f -exec chmod 440 {} \;
+
+# 修复 /var/local、/var/mail、/var/www/html 下残余 root 属主
+RUN \
+  chown -R discourse:www-data /var/local /var/mail /var/www/html && \
+  find /var/local /var/mail /var/www/html -type d -exec chmod 750 {} \; && \
+  find /var/local /var/mail /var/www/html -type f -exec chmod 640 {} \;
+
+# 删除任何已有的 history 文件
+RUN rm -f /root/.bash_history /home/discourse/.bash_history
+RUN { \
+      echo ''; \
+      echo '# Disable Bash history for security'; \
+      echo 'set +o history'; \
+      echo 'export HISTFILE=/dev/null'; \
+      echo 'export HISTSIZE=0'; \
+      echo 'export HISTFILESIZE=0'; \
+    } >> /etc/profile
+
+# 确保 Discourse 用户也读取到
+RUN chown root:root /etc/profile && chmod 644 /etc/profile
+
+# 插入证书路径
+RUN \
+  sed -i 's|listen\s\+80;|listen 0.0.0.0:8080; listen 0.0.0.0:443 ssl http2;|' /etc/nginx/nginx.conf && \
+  sed -i '/listen\s\+8080;/d' /etc/nginx/conf.d/discourse.conf && \
+  sed -i 's|listen\s\+80;|listen 0.0.0.0:8080;|' /etc/nginx/conf.d/discourse.conf && \
+  sed -i '/server_name _;/a \
+    ssl_certificate     /etc/nginx/certs/discourse.crt; \
+    ssl_certificate_key /etc/nginx/certs/discourse.key; \
+    ssl_protocols       TLSv1.2 TLSv1.3; \
+    ssl_prefer_server_ciphers on; \
+    ssl_ciphers         HIGH:!aNULL:!MD5; \
+  ' /etc/nginx/conf.d/discourse.conf && \
+  rm -f /etc/nginx/sites-enabled/default
+
+EXPOSE 8080 443
 
 # 切换到非root用户
 USER discourse
