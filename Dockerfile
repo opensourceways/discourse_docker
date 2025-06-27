@@ -131,7 +131,9 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   \
   && chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
   \
-  && find /var/backups /var/log /var/nginx /var/www/discourse -type f -exec chmod 600 {} \; \
+  && find /var/www/discourse /var/backups /var/log /var/nginx -type f -exec chmod 600 {} \; \
+  \
+  && find /var/www/discourse -type d -exec chmod 755 {} \; && chmod 755 /var/www/discourse/config/unicorn_launcher\
   \
   && find /var/cache /var/lib /var/local /var/spool /var/mail /var/opt -type f -exec chmod 440 {} \; && \
   # 修复 /var/local、/var/mail、/var/www/html 下残余 root 属主
