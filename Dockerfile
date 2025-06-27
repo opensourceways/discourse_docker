@@ -131,7 +131,9 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   \
   && chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
   \
-  && find /var/www/discourse /var/backups /var/log /var/nginx -type f -exec chmod 600 {} \; \
+  && find /var/www/discourse /var/backups /var/log /var/nginx -type f -exec chmod 640 {} \; \
+  \
+  && find /var/www/discourse/vendor/bundle/ruby/3.3.0/bin -type f -exec chmod 755 {} \; \
   \
   && find /var/www/discourse -type d -exec chmod 755 {} \; && chmod 755 /var/www/discourse/config/unicorn_launcher\
   \
