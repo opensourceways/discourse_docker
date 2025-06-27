@@ -100,13 +100,13 @@ RUN \
     && chmod 750 /var/backups /var/log /var/nginx /var/www/discourse \
     \
     # 不需要写入的系统目录：root:root, 550
-    chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
+    && chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
     \
     # 写入目录下的文件设为 600
-    find /var/backups /var/log /var/nginx /var/www/discourse -type f -exec chmod 600 {} \; \
+    && find /var/backups /var/log /var/nginx /var/www/discourse -type f -exec chmod 600 {} \; \
     \
     # 非写入目录下的文件设为 440
-    find /var/cache /var/lib /var/local /var/spool /var/mail /var/opt -type f -exec chmod 440 {} \;
+    && find /var/cache /var/lib /var/local /var/spool /var/mail /var/opt -type f -exec chmod 440 {} \;
 
 # 修复 /var/local、/var/mail、/var/www/html 下残余 root 属主
 RUN \
