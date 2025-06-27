@@ -102,9 +102,6 @@ RUN \
     # 不需要写入的系统目录：root:root, 550
     chmod 550 /var/cache /var/lib /var/local /var/spool /var/mail /var/opt \
     \
-    # /var/tmp 保持 1777
-    chmod 1777 /var/tmp \
-    \
     # 写入目录下的文件设为 600
     find /var/backups /var/log /var/nginx /var/www/discourse -type f -exec chmod 600 {} \; \
     \
