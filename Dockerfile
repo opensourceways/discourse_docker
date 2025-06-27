@@ -140,6 +140,7 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   && find /var/cache /var/lib /var/local /var/spool /var/mail /var/opt -type f -exec chmod 440 {} \; && \
   # 修复 /var/local、/var/mail、/var/www/html 下残余 root 属主
   chown -R discourse:www-data /var/local /var/mail /var/www/html && \
+  chown -R discourse:www-data /etc/ssl/certs && \
   find /var/local /var/mail /var/www/html -type d -exec chmod 750 {} \; && \
   find /var/local /var/mail /var/www/html -type f -exec chmod 640 {} \; && \
   # 删除任何已有的 history 文件
