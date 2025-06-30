@@ -168,8 +168,6 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   ' /etc/nginx/conf.d/discourse.conf && \
   rm -f /etc/nginx/sites-enabled/default
 
-
-
 # # 修正 /etc/nginx 下所有目录和文件的属主与权限
 # RUN \
 #   chown -R discourse:www-data /etc/nginx && \
