@@ -158,7 +158,7 @@ run:
   - replace:
       filename: "/etc/nginx/conf.d/discourse.conf"
       from: /listen\s+80;/
-      to: "listen 8080;"
+      to: "listen 8080 ssl;"
 
 
   - exec:
