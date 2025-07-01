@@ -122,7 +122,6 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   usermod -s /sbin/nologin sync && \
   # 插入证书路径
   sed -i 's/server {/server {\
-  listen 443 ssl http2;\
   ssl_certificate     \/etc\/nginx\/certs\/discourse.crt;\
   ssl_certificate_key \/etc\/nginx\/certs\/discourse.key;\
   ssl_protocols       TLSv1.2;\
