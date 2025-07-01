@@ -120,17 +120,6 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   chage --maxdays 30 discourse && \
   passwd -| discourse && \
   usermod -s /sbin/nologin sync && \
-  # 插入证书路径
-  sed -i 's/server {/server {\
-  listen 8080;\
-  listen 443 ssl http2;\
-  ssl_certificate     \/etc\/nginx\/certs\/discourse.crt;\
-  ssl_certificate_key \/etc\/nginx\/certs\/discourse.key;\
-  ssl_protocols       TLSv1.2;\
-  ssl_prefer_server_ciphers on;\
-  ssl_ciphers         HIGH:!aNULL:!MD5;/' \
-  /etc/nginx/conf.d/discourse.conf && \
-  cat /etc/nginx/conf.d/discourse.conf && \
   # 修正 /etc/nginx 下所有目录和文件的属主与权限
   chown -R discourse:www-data /etc/nginx && \
   find /etc/nginx -type d -exec chmod 550 {} \; && \

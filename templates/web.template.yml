@@ -159,7 +159,17 @@ run:
       filename: "/etc/nginx/conf.d/discourse.conf"
       from: /listen\s+80;/
       to: "listen 8080 ssl;"
-
+   
+  - replace:
+      filename: "/etc/nginx/conf.d/discourse.conf"
+      from: '^server \{'
+      to: |
+        server {
+          ssl_certificate     /etc/nginx/certs/discourse.crt;
+          ssl_certificate_key /etc/nginx/certs/discourse.key;
+          ssl_protocols       TLSv1.2;
+          ssl_prefer_server_ciphers on;
+          ssl_ciphers         HIGH:!aNULL:!MD5;
 
   - exec:
       cmd: echo "done configuring web"
