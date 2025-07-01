@@ -120,6 +120,14 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   chage --maxdays 30 discourse && \
   passwd -| discourse && \
   usermod -s /sbin/nologin sync && \
+  # 插入证书路径
+  sed -i '/server_name _;/a \
+  ssl_certificate     /etc/nginx/certs/discourse.crt; \
+  ssl_certificate_key /etc/nginx/certs/discourse.key; \
+  ssl_protocols       TLSv1.2; \
+  ssl_prefer_server_ciphers on; \
+  ssl_ciphers         HIGH:!aNULL:!MD5; \
+  ' /etc/nginx/conf.d/discourse.conf && \
   # 修正 /etc/nginx 下所有目录和文件的属主与权限
   chown -R discourse:www-data /etc/nginx && \
   find /etc/nginx -type d -exec chmod 550 {} \; && \
@@ -155,16 +163,6 @@ RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/
   } >> /etc/profile && \
   # 确保 Discourse 用户也读取到
   chown root:root /etc/profile && chmod 644 /etc/profile && \
-  # 插入证书路径
-  # sed -i 's|listen\s\+80;|listen 0.0.0.0:8080; listen 0.0.0.0:443 ssl http2;|' /etc/nginx/nginx.conf && \
-  # sed -i 's|listen\s\+80;|listen 0.0.0.0:8080;|' /etc/nginx/conf.d/discourse.conf && \
-  sed -i '/server_name _;/a \
-  ssl_certificate     /etc/nginx/certs/discourse.crt; \
-  ssl_certificate_key /etc/nginx/certs/discourse.key; \
-  ssl_protocols       TLSv1.2 TLSv1.3; \
-  ssl_prefer_server_ciphers on; \
-  ssl_ciphers         HIGH:!aNULL:!MD5; \
-  ' /etc/nginx/conf.d/discourse.conf && \
   rm -f /etc/nginx/sites-enabled/default
 
 EXPOSE 8080
