@@ -25,8 +25,8 @@ templates:
 # docker_args:
 
 params:
-  ## Which Git revision should this container use? (default: tests-passed)
-  version: v3.5.0.beta7
+  ## Which Git revision should this container use? (default: tests-passed)v3.5.0.beta7
+  version:
 
 env:
   LC_ALL: en_US.UTF-8

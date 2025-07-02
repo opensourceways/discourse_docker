@@ -4,49 +4,6 @@ FROM local_discourse/web_only:latest
 # USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
-# # 卸载 sudo
-# RUN apt-get update   
-# RUN apt-get autoremove -y 
-# RUN apt-get clean 
-# RUN rm -rf /var/lib/apt/lists/*
-
-# # 卸载安装工具
-# RUN apt-get update \
-#  && apt-get purge -y --auto-remove \
-#       tcpdump \
-#       nmap \
-#       wireshark-common \
-#       netcat-openbsd \
-#       gdb \
-#       strace \
-#       binutils \
-#       build-essential \
-#       cmake \
-#       flex \
-#       libtool \
-#       php-cli \
-#       python3-dbg \
-#  && rm -f \
-#       /usr/bin/tcpdump      \
-#       /usr/bin/nmap          \
-#       /usr/bin/wireshark*    \
-#       /usr/bin/netcat        \
-#       /usr/bin/gdb           \
-#       /usr/bin/strace        \
-#       /usr/bin/readelf       \
-#       /usr/bin/cpp           \
-#       /usr/bin/gcc           \
-#       /usr/bin/make          \
-#       /usr/bin/objdump       \
-#       /usr/bin/ar            \
-#       /usr/bin/ld            \
-#       /usr/bin/flex          \
-#       /usr/bin/lex           \
-#       /usr/bin/rpcgen        \
-#       /usr/bin/cmake         \
-#  && apt-get clean \
-#  && rm -rf /var/lib/apt/lists/*
-
 # 卸载 sudo
 RUN apt-get update && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* && \
   # 卸载安装工具
