@@ -30,10 +30,10 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     sed -i "s|adm|www-data|g" /etc/rsyslog.conf && \
     sed -i '2i cd /var/www/discourse' /etc/service/unicorn/run && \
     sed -i "s|www-data|discourse|g" /etc/nginx/nginx.conf && \
-    echo "umask 0027" >> /etc/profile && \
-    echo "set +o history" >> /etc/profile && \
-    sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /etc/profile && \
-    source /etc/profile && \
+    echo "umask 0027" >> /home/discourse/.bashrc && \
+    echo "set +o history" >> /home/discourse/.bashrc && \
+    sed -i "s|HISTSIZE=1000|HISTSIZE=0|" /home/discourse/.bashrc && \
+    source /home/discourse/.bashrc && \
     chage --maxdays 30 discourse && \
     passwd -l discourse && \
     usermod -s /sbin/nologin sync
