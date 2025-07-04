@@ -44,7 +44,8 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     find /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets -type f -exec chmod 640 {} \; && \
     # remove sudo
     apt-get update && \
-    apt-get purge -y sudo && \
+    DEBIAN_FRONTEND=noninteractive \
+    SUDO_FORCE_REMOVE=yes apt-get purge -y sudo && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
