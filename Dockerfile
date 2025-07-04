@@ -36,7 +36,17 @@ RUN mkdir -p /shared/state/logrotate && ln -s /shared/state/logrotate /var/lib/l
     source /home/discourse/.bashrc && \
     chage --maxdays 30 discourse && \
     passwd -l discourse && \
-    usermod -s /sbin/nologin sync
+    usermod -s /sbin/nologin sync && \
+    # 修正 /etc/nginx 下所有目录和文件的属主与权限
+    chown -R discourse:www-data /etc/nginx && \
+    find /etc/nginx -type d -exec chmod 550 {} \; && \
+    find /etc/nginx -type f -name '*.conf' -exec chmod 640 {} \; && \
+    find /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/snippets -type f -exec chmod 640 {} \; && \
+    # remove sudo
+    apt-get update && \
+    apt-get purge -y sudo && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # 切换到非root用户
 USER discourse
