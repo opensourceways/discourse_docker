@@ -1,4 +1,0 @@
-[submodule "discourse_config"]
-	path = discourse_config
-	url = https://github.com/opensourceways/discourse_config
-	branch = test_easecheck_log_id
